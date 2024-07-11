@@ -1,28 +1,28 @@
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
-using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using System.IO;
 using Dalamud.Plugin.Services;
-using Dalamud.Logging;
+using Dalamud.IoC;
 
 namespace MaterialUI {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
 	public class MaterialUI : IDalamudPlugin {
 		public string Name => "Material UI";
 		private const string command = "/materialui";
 		
 		public string penumbraIssue {get; private set;} = null;
 		
-		public DalamudPluginInterface pluginInterface {get; private set;}
-		public ICommandManager commandManager {get; private set;}
-		public UI ui {get; private set;}
+		[PluginService] public IDalamudPluginInterface pluginInterface {get; private set;}
+		[PluginService] public ICommandManager commandManager {get; private set;}
+		[PluginService] public IPluginLog log { get; set; }
 		public Config config {get; private set;}
+		[PluginService] public ITextureProvider textureProvider {get; private set;}
+		public UI ui {get; private set;}
 		public Updater updater {get; private set;}
 		
-		public MaterialUI(DalamudPluginInterface pluginInterface, ICommandManager commandManager) {
-			this.pluginInterface = pluginInterface;
-			this.commandManager = commandManager;
+		public MaterialUI() {
 			
 			config = pluginInterface.GetPluginConfig() as Config ?? new Config();
 			updater = new Updater(this);
@@ -58,7 +58,7 @@ namespace MaterialUI {
 			try {
 				pluginInterface.GetIpcSubscriber<(int, int)>("Penumbra.ApiVersions").InvokeFunc();
 			} catch(Exception e) {
-				PluginLog.Error("Penumbra.ApiVersions failed", e);
+				log.Error("Penumbra.ApiVersions failed", e);
 				penumbraIssue = "Penumbra not found.";
 				
 				return;

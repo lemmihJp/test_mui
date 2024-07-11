@@ -1,6 +1,5 @@
 // TODO: Make it less of a mess
 
-using Dalamud.Logging;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,7 +8,8 @@ using System.IO;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
 
 namespace MaterialUI {
 	public struct RepoFile {
@@ -275,7 +275,7 @@ namespace MaterialUI {
 					
 					main.ui.ShowNotice(string.Format("Downloading ({0}/{1})\n{2}", done, total, name));
 				} catch(Exception e) {
-					PluginLog.LogError(e, "Download failed");
+					// PluginLog.LogError(e, "Download failed");
 					// It failed, just add it back to the queue
 					queue.Add((url, name, sha));
 					failcount++;
@@ -384,7 +384,7 @@ namespace MaterialUI {
 					data = JsonConvert.DeserializeObject<Repo>(resp);
 					dirMods[thirdparty] = PopulateDir(data, thirdparty).GetPathDir("mods");
 				} catch(Exception e) {
-					PluginLog.LogError(e, "Failed loading third party mod repository " + thirdparty);
+					// PluginLog.LogError(e, "Failed loading third party mod repository " + thirdparty);
 				}
 			}
 			
@@ -411,17 +411,18 @@ namespace MaterialUI {
 			// Create mod structure
 			foreach(KeyValuePair<string, Dir> modRepo in dirMods)
 				foreach(KeyValuePair<string, Dir> mod in modRepo.Value.dirs) {
-					PluginLog.Log(mod.Key);
+					// PluginLog.Log(mod.Key);
 					try {
 						resp = Regex.Replace(await GetStringAsync(mod.Value.files["options.json"].Item2), "//[^\n]*", "");
 						Options options = JsonConvert.DeserializeObject<Options>(resp);
+						
 						if(!mods.ContainsKey(mod.Key))
 							mods[mod.Key] = new Mod(
 								mod.Key,
 								modRepo.Key,
 								options,
 								mod.Value,
-								mod.Value.files.ContainsKey("preview.png") ? main.pluginInterface.UiBuilder.LoadImage(await GetBytesAsync(mod.Value.files["preview.png"].Item2)) : null
+								mod.Value.files.ContainsKey("preview.png") ? main.textureProvider.CreateFromImageAsync(await GetBytesAsync(mod.Value.files["preview.png"].Item2)).Result : null
 							);
 						
 						if(!main.config.modOptions.ContainsKey(mod.Key))
@@ -431,7 +432,7 @@ namespace MaterialUI {
 							if(!main.config.modOptions[mod.Key].colors.ContainsKey(option.id))
 								main.config.modOptions[mod.Key].colors[option.id] = new Vector3(option.@default.r / 255f, option.@default.g / 255f, option.@default.b / 255f);
 					} catch(Exception e) {
-						PluginLog.LogError(e, "Failed prepairing mod repository " + mod.Key);
+						// PluginLog.LogError(e, "Failed prepairing mod repository " + mod.Key);
 					}
 				}
 		}
@@ -804,7 +805,7 @@ namespace MaterialUI {
 				// if(!main.config.accentOnly)
 					walkDirMain(dirMaster.dirs["4K resolution"].dirs[char.ToUpper(main.config.style[0]) + main.config.style.Substring(1)].dirs["Saved"], null);
 			} catch(Exception e) {
-				PluginLog.LogError(e, "Failed writing textures");
+				// PluginLog.LogError(e, "Failed writing textures");
 				main.ui.ShowNotice($"Failed writing texture\n{curpath}\n{e.Message}\n\nTry a Integrity Check in the Advanced tab", true);
 				
 				return false;
