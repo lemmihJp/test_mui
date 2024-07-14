@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<Authors>Sevii, SayuShira</Authors>
-		<Version>1.4.14</Version>
+		<Version>1.5.0</Version>
 	</PropertyGroup>
 	
 	<PropertyGroup>

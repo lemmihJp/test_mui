@@ -1,5 +1,7 @@
 Check out Material UI by skotlex [here](https://github.com/skotlex/ffxiv-material-ui)
 
+Updated for DT, but only the Plugin Code. It runs. That's it. I have no glue about FFXIV UI modding, so don't expect UI fixes right now.
+
 ![preview](images/preview.png)
 
 Auto updating Material UI with custom accent color.
