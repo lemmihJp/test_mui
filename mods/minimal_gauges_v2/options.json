@@ -74,7 +74,8 @@
 					"ui/uld/jobhudsimple_stackb",
 					"ui/uld/parameter_gauge",
 					"ui/uld/parameter_gauge2",
-					"ui/uld/contentgauge"
+					"ui/uld/contentgauge",
+					"ui/uld/jobhudrpm1"
 				]
 			}
 		}
